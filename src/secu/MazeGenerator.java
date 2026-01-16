@@ -59,6 +59,7 @@ public class MazeGenerator {
 
         // 6단계: 아이템 배치 (2~3개)
         placeItems(maze, size, 3);
+        placeTrap(maze,size,2);
 
         return maze;
     }
@@ -122,6 +123,22 @@ public class MazeGenerator {
 
             if (maze[x][y] == 3) {  // 길 위에만 배치
                 maze[x][y] = 6;  // 아이템
+                placed++;
+            }
+            attempts++;
+        }
+    }
+
+    private void placeTrap(int[][] maze, int size, int count) {
+        int placed = 0;
+        int attempts = 0;
+
+        while (placed < count && attempts < 100) {
+            int x = 1 + random.nextInt(size - 2);
+            int y = 1 + random.nextInt(size - 2);
+
+            if (maze[x][y] == 3 || maze[x][y] == 6) {  //아이템이나 길 위에만 배치
+                maze[x][y] = 5;  // 아이템
                 placed++;
             }
             attempts++;
