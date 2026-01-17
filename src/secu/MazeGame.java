@@ -440,4 +440,9 @@ public class MazeGame extends JFrame {
         }
 
     }
+    // 화면 크기 조절 시 화면을 다시 그림
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+    }
 }

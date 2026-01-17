@@ -6,7 +6,7 @@ import java.util.Random;
  * 미로를 자동으로 생성하는 클래스
  */
 public class MazeGenerator {
-    private Random random;
+    private final Random random;
 
     public MazeGenerator() {
         this.random = new Random();
