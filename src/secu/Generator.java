@@ -1,15 +1,37 @@
 package secu;
+/*
+
+현재 좀더 강화된 생성규칙 구현 완료
+앞으로 구현할 것 -> 벽 두르기 , 범위 안넘어가면서 강화규칙 유지하기
+
+
+*
+*
+* */
+
 
 import javax.swing.*;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Generator extends JFrame {
+    //아이템
+    private final Random random = new Random();
+    private int placed = 0;
+    private int attempts = 0;
+    //트랩
+    private int trapPlaced = 0;
+    private int trapAttempts = 0;
+
+
+
     private final Container container = getContentPane();
     private final JPanel[][] cells;
     private final int rows;
     private final int cols;
     private final boolean[][] maze;
+    private final int[][] testMaze;
     private final int[][] directions = {
             {1, 0},  // Down
             {0, 1},  // Right
@@ -20,6 +42,7 @@ public class Generator extends JFrame {
     public Generator(int rows, int cols, int cellSize) {
         this.rows = rows;
         this.cols = cols;
+        this.testMaze = new int[rows][cols];
         this.maze = new boolean[rows][cols];
         this.cells = new JPanel[rows][cols];
 
@@ -28,9 +51,13 @@ public class Generator extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
         init();
         generateMaze();
+    }
+
+    public int[][] newGenerator(){
+        return testMaze;
+
     }
 
     private void init() {
@@ -44,6 +71,18 @@ public class Generator extends JFrame {
                 cells[row][col].setBackground(Color.BLACK);
             }
         }
+        //전부 벽으로 초기화
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                testMaze[row][col] = 4;
+            }
+        }
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                System.out.print(testMaze[row][col]);
+            }
+            System.out.println();
+        }
 
         container.revalidate();
         container.repaint();
@@ -51,6 +90,15 @@ public class Generator extends JFrame {
 
     private void paintCellAndRefresh(int row, int col, Color color) {
         cells[row][col].setBackground(color);
+        if(color == Color.RED){
+            testMaze[row][col] = 9;
+        } else if (color == Color.GREEN) {
+            testMaze[row][col] = 0;
+        }
+        else if (color == Color.WHITE) {
+            testMaze[row][col] = 3;
+        }
+
         container.revalidate();
         container.repaint();
     }
@@ -58,11 +106,14 @@ public class Generator extends JFrame {
     private void generateMaze() {
         paintCellAndRefresh(0, 0, Color.RED); // 시작점 표시 (빨간색)
         dfs(0, 0); // DFS 알고리즘으로 미로 생성
+        placeItems(testMaze,rows,3);
+        placeTrap(testMaze,rows,3);
         paintCellAndRefresh(rows - 2, cols - 2, Color.GREEN); // 도착점 표시 (초록색)
     }
 
     private void dfs(int x, int y) {
         maze[x][y] = true;
+        testMaze[x][y] =3;
         shuffleArray(directions);
 
         for (int[] direction : directions) {
@@ -72,45 +123,94 @@ public class Generator extends JFrame {
                 nx, ny를 2칸 다음의 칸으로 설정하여 벽이 없어지는 것을 방지
              */
 
-            int nx = x + direction[0] * 2;
-            int ny = y + direction[1] * 2;
+int nx = x + direction[0] * 2;
+int ny = y + direction[1] * 2;
 
             if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !maze[nx][ny]) {
-                maze[nx][ny] = true;
-                maze[x + direction[0]][y + direction[1]] = true;
+maze[nx][ny] = true;
+maze[x + direction[0]][y + direction[1]] = true;
 
-                try {
-                    Thread.sleep(1); // 미로가 생성되는 속도를 조절
+        try {
+        Thread.sleep(1); // 미로가 생성되는 속도를 조절
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+        e.printStackTrace();
                 }
 
-                // 2칸 떨어진 다음 칸과 그 사이 칸을 칠함
-                paintCellAndRefresh(nx, ny, Color.WHITE);
-                paintCellAndRefresh(x + direction[0], y + direction[1], Color.WHITE);
+// 2칸 떨어진 다음 칸과 그 사이 칸을 칠함
+paintCellAndRefresh(nx, ny, Color.WHITE);
+paintCellAndRefresh(x + direction[0], y + direction[1], Color.WHITE);
+
+                for (int row = 0; row < rows; row++) {
+        for (int col = 0; col < cols; col++) {
+        System.out.print(testMaze[row][col]);
+                    }
+                            System.out.println();
+                }
+
 
                 dfs(nx, ny);
             }
+                    }
+                    }
+
+    private void placeItems(int[][] maze, int size, int count) {
+
+        while (placed < count && attempts < 100) {
+            int x = 1 + random.nextInt(size - 2);
+            int y = 1 + random.nextInt(size - 2);
+
+            if (maze[x][y] == 3) {  // 길 위에만 배치
+                maze[x][y] = 6;  // 아이템
+                System.out.println("아이템 배치");
+                placed++;
+            }
+            attempts++;
         }
     }
 
-    // 방향 배열을 랜덤하게 섞음
-    private void shuffleArray(int[][] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            int j = (int) (Math.random() * (i + 1));
-            int[] temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
+    private void placeTrap(int[][] maze, int size, int count) {
+
+
+        while (trapPlaced < count && trapAttempts < 100) {
+            int x = 1 + random.nextInt(size - 2);
+            int y = 1 + random.nextInt(size - 2);
+
+            if (maze[x][y] == 3 || maze[x][y] == 6) {  //아이템이나 길 위에만 배치
+                maze[x][y] = 5;  // 트랩
+                System.out.println("트랩 배치");
+                trapPlaced++;
+            }
+            trapAttempts++;
+        }
+    }
+    public void printMaze(){
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                System.out.print(testMaze[row][col]);
+            }
+            System.out.println();
         }
     }
 
-    // 화면 크기 조절 시 화면을 다시 그림
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+// 방향 배열을 랜덤하게 섞음
+private void shuffleArray(int[][] arr) {
+    for (int i = 0; i < arr.length; i++) {
+        int j = (int) (Math.random() * (i + 1));
+        int[] temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
+}
 
-    public static void main(String[] args) {
-        new Generator(10, 10, 100);
+// 화면 크기 조절 시 화면을 다시 그림
+@Override
+public void paint(Graphics g) {
+    super.paint(g);
+}
+
+public static void main(String[] args) {
+    Generator generator = new Generator(20, 20, 100);
+    System.out.println("testMaze");
+    generator.printMaze();
     }
 }

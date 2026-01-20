@@ -191,7 +191,16 @@ public class MazeGame extends JFrame {
         int direction = (int)(Math.random() * 4);
         int newRow = player2.getRow();
         int newCol = player2.getCol();
-
+//        int[][] directions = {
+//                {1, 0},  // Down
+//                {0, 1},  // Right
+//                {-1, 0}, // Up
+//                {0, -1}  // Left
+//        };
+//        for(int[] dis : directions){
+//           newRow+=dis[0];
+//           newCol+=dis[1];
+//        }
         switch(direction) {
             case 0: newRow--; break;  // 위
             case 1: newRow++; break;  // 아래
@@ -205,6 +214,7 @@ public class MazeGame extends JFrame {
             if (maze[newRow][newCol] == 6) {
                 activateItem(player2);  // 아이템 효과 발동
             }
+            //트랩 구현중
 
             // 현재 위치를 길로
             maze[player2.getRow()][player2.getCol()] = 3;
