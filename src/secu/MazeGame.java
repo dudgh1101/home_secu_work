@@ -6,6 +6,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MazeGame extends JFrame {
     int[][] maze;
@@ -30,6 +33,9 @@ public class MazeGame extends JFrame {
             {1, 0},   // DOWN 2
             {0, -1}   // LEFT 3
     };
+
+    private static StringBuffer pr_buffer = new StringBuffer();
+    private static StringBuffer ai_buffer = new StringBuffer();
 
     public MazeGame(int[][] mazeData){
         this.maze = mazeData;
@@ -213,6 +219,21 @@ public class MazeGame extends JFrame {
         }
         player2.setDiraction(dir);
 
+        switch (dir){
+            case 0:
+                ai_buffer.append("↑");
+                break;
+            case 1:
+                ai_buffer.append("→");
+                break;
+            case 2:
+                ai_buffer.append("↓");
+                break;
+            case 3:
+                ai_buffer.append("←");
+                break;
+        }
+
         int newRow = player2.getRow() + directions[dir][0];
         int newCol = player2.getCol() + directions[dir][1];
 
@@ -223,11 +244,13 @@ public class MazeGame extends JFrame {
 
         //아이템 체크
         if (maze[newRow][newCol] == 6) {
+            ai_buffer.append("6");
             activateItem(player2);  // 아이템 효과 발동
         }
 
         //도착 체크
         if (maze[newRow][newCol] == 9) {
+            ai_buffer.append("0");
             player2.setArrived(true);
             player2.setFinishTime(gameSeconds);
             System.out.println("AI도착: "+aiTimer+"초");
@@ -261,18 +284,22 @@ public class MazeGame extends JFrame {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_W:
                 newRow--;
+                pr_buffer.append("↑");
                 break;
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_S:
                 newRow++;
+                pr_buffer.append("↓");
                 break;
             case KeyEvent.VK_LEFT:
             case KeyEvent.VK_A:
                 newCol--;
+                pr_buffer.append("←");
                 break;
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_D:
                 newCol++;
+                pr_buffer.append("→");
                 break;
             case KeyEvent.VK_R:
                 activateItem(player2);
@@ -282,11 +309,14 @@ public class MazeGame extends JFrame {
         }
 
         if(canMove(newRow, newCol)){
-
+        //아이템
             if (maze[newRow][newCol] == 6) {
+                pr_buffer.append("6");
                 activateItem(player1);  // player1만!
             }
+//            트랩
             if (maze[newRow][newCol] == 5) {
+                pr_buffer.append("5");
                 activeTrap(player1);  // player1만!
             }
 
@@ -296,6 +326,7 @@ public class MazeGame extends JFrame {
             player1.setCol(newCol);
 
             if(maze[newRow][newCol] == 9){
+                pr_buffer.append("0");
                 player1.setArrived(true);
                 player1.setFinishTime(gameSeconds);
                 JOptionPane.showMessageDialog(this, "플레이어1 도착 시간: "+ gameSeconds);
@@ -325,6 +356,20 @@ public class MazeGame extends JFrame {
             } else {
                 message += "무승부!";
             }
+            try {
+                Files.writeString(Paths.get("D:\\secu_extend\\secu_exten\\src\\secu\\all_log\\test_prLog.txt"),pr_buffer.toString());
+
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+            try {
+                Files.writeString(Paths.get("D:\\secu_extend\\secu_exten\\src\\secu\\all_log\\test_aiLog.txt"),ai_buffer.toString());
+
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
             this.dispose();
             new EndScreen(gameSeconds);
 
