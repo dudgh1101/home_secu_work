@@ -82,7 +82,7 @@ public class ReplayScreen extends JFrame {
     }
 
     void showReplayList(JPanel panel) {
-        File dir = new File("D:\\secu_extend\\secu_exten\\src\\secu\\all_log");
+        File dir = new File("D:\\secu_extend\\secu_exten\\src\\secu\\all_log\\");
         File[] files = dir.listFiles((d, name) -> name.startsWith("game_save") && name.endsWith(".txt"));
 
         // ✅ 디버깅: 찾은 파일 출력
@@ -122,8 +122,6 @@ public class ReplayScreen extends JFrame {
         // 리플레이 재생 화면으로 이동
 
         //리플레이(해당파일경로) -> 메즈로더와 같은 원리로 읽고 각각 ai, pr 버퍼에다 넣고 행동
-
-
 
 
     }

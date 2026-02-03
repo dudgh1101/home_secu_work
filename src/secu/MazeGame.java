@@ -411,7 +411,7 @@ public class MazeGame extends JFrame {
     }
 
     boolean canMove(int row, int col){
-        if (row < 0 || row >= maze.length || col < 0 || col >= maze[0].length) {
+        if (row < 0 || row > maze.length || col < 0 || col > maze[0].length) {
             return false;
         }
 

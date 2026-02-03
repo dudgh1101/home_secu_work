@@ -80,6 +80,7 @@ public class MenuScreen extends JFrame {
     }
 
     void startReplayButton(){
+        this.dispose();
         new ReplayScreen();
     }
 

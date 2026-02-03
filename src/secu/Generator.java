@@ -55,7 +55,7 @@ public class Generator extends JFrame {
         setSize(cols * cellSize, rows * cellSize);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setVisible(false);
+        setVisible(true);
         init();
         generateMaze();
     }
@@ -112,7 +112,7 @@ public class Generator extends JFrame {
         placeStart(testMaze,rows,2);
         placeItems(testMaze,rows,3);
         placeTrap(testMaze,rows,3);
-        paintCellAndRefresh(rows - 2, cols - 2, Color.RED); // 도착점 표시 (초록색)
+        paintCellAndRefresh(rows - 2, cols - 2, Color.RED);
     }
 
     private void dfs(int x, int y) {
@@ -130,7 +130,7 @@ public class Generator extends JFrame {
         int nx = x + direction[0] * 2;
         int ny = y + direction[1] * 2;
 
-        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !maze[nx][ny]) {
+            if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !maze[nx][ny]) {
             maze[nx][ny] = true;
             maze[x + direction[0]][y + direction[1]] = true;
 
@@ -243,9 +243,9 @@ public void paint(Graphics g) {
     super.paint(g);
 }
 
-//public static void main(String[] args) {
-//    Generator generator = new Generator(20, 20, 100);
+public static void main(String[] args) {
+    Generator generator = new Generator(10, 10, 50);
 //    System.out.println("testMaze");
 //    generator.printMaze();
-//    }
+    }
 }
