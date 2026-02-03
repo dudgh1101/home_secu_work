@@ -279,7 +279,7 @@ public class MazeGame extends JFrame {
 
         //도착 체크
         if (maze[newRow][newCol] == 9) {
-            ai_buffer.append("9");
+            ai_buffer.append("e");
             player2.setArrived(true);
             player2.setFinishTime(gameSeconds);
             System.out.println("AI도착: "+aiTimer+"초");
@@ -355,7 +355,7 @@ public class MazeGame extends JFrame {
             player1.setCol(newCol);
 
             if(maze[newRow][newCol] == 9){
-                pr_buffer.append("9");
+                pr_buffer.append("e");
                 player1.setArrived(true);
                 player1.setFinishTime(gameSeconds);
                 JOptionPane.showMessageDialog(this, "플레이어1 도착 시간: "+ gameSeconds);
