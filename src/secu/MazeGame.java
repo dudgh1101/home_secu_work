@@ -388,6 +388,8 @@ public class MazeGame extends JFrame {
 
             buffer.append(pr_buffer.toString());
             buffer.append(ai_buffer.toString());
+            buffer.append(gameSeconds+"e");
+            buffer.append(aiGameSeconds+"e");
 
 
             while (Files.exists(filePath)){
