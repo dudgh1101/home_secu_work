@@ -4,9 +4,9 @@ package secu;
 import javax.swing.*;
 import java.awt.*;
 
-public class EndScreen extends JFrame {
+public class EndScreen<E> extends JFrame {
 
-    public EndScreen(int second,int aiSecond){
+    public EndScreen(E second,E aiSecond){
         setTitle("미로 찾기 게임 - 엔딩");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

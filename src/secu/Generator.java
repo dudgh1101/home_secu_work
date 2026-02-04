@@ -112,7 +112,7 @@ public class Generator extends JFrame {
         placeStart(testMaze,rows,2);
         placeItems(testMaze,rows,3);
         placeTrap(testMaze,rows,3);
-        paintCellAndRefresh(rows - 2, cols - 2, Color.RED);
+        placeEnd(testMaze,rows,1);
     }
 
     private void dfs(int x, int y) {

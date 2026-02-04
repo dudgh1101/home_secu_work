@@ -116,8 +116,10 @@ public class ReplayScreen extends JFrame {
 
     // 리플레이 재생 (나중에 구현)
     void playReplay(String fileName) {
-        JOptionPane.showMessageDialog(this, "리플레이 재생: " + fileName + "\n(나중에 구현)");
-        JOptionPane.showMessageDialog(this, "리플레이 경로: " + filePath + fileName + "\n(나중에 구현)");
+//        JOptionPane.showMessageDialog(this, "리플레이 재생: " + fileName);
+//        JOptionPane.showMessageDialog(this, "리플레이 경로: " + filePath + fileName);
+        this.dispose();
+        new MazeReGame(filePath+fileName);
 //        -> all_loggame_save.txt라고 출려됨
         // 리플레이 재생 화면으로 이동
 

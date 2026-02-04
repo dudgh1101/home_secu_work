@@ -276,13 +276,16 @@ public class MazeGame extends JFrame {
             ai_buffer.append("6");
             activateItem(player2);  // 아이템 효과 발동
         }
+        if (maze[newRow][newCol] == 2) {
+            ai_buffer.append("2");
+        }
 
         //도착 체크
         if (maze[newRow][newCol] == 9) {
             ai_buffer.append("e");
             player2.setArrived(true);
             player2.setFinishTime(gameSeconds);
-            System.out.println("AI도착: "+aiTimer+"초");
+            System.out.println("AI도착: "+aiGameSeconds+"초");
             aiTimer.stop();
             checkGameEnd();
             return;
@@ -332,6 +335,7 @@ public class MazeGame extends JFrame {
                 break;
             case KeyEvent.VK_R:
                 activateItem(player2);
+                trapTimer.stop();
                 break;
             default:
                 return;
@@ -341,12 +345,16 @@ public class MazeGame extends JFrame {
         //아이템
             if (maze[newRow][newCol] == 6) {
                 pr_buffer.append("6");
-                activateItem(player1);  // player1만!
+                activateItem(player1);
             }
 //            트랩
             if (maze[newRow][newCol] == 5) {
                 pr_buffer.append("5");
-                activeTrap(player1);  // player1만!
+                activeTrap(player1);
+            }
+            if (maze[newRow][newCol] == 2) {
+                pr_buffer.append("2");
+
             }
 
             maze[player1.getRow()][player1.getCol()] = 3;
@@ -388,8 +396,8 @@ public class MazeGame extends JFrame {
 
             buffer.append(pr_buffer.toString());
             buffer.append(ai_buffer.toString());
-            buffer.append(gameSeconds+"e");
-            buffer.append(aiGameSeconds+"e");
+            buffer.append(player1.getFinishTime()+"e");
+            buffer.append(player2.getFinishTime()+"e");
 
 
             while (Files.exists(filePath)){
@@ -406,7 +414,7 @@ public class MazeGame extends JFrame {
 
 
             this.dispose();
-            new EndScreen(gameSeconds,aiGameSeconds);
+            new EndScreen(player1.getFinishTime(),player2.getFinishTime());
 
             JOptionPane.showMessageDialog(this, message);
         }
