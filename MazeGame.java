@@ -32,7 +32,7 @@ public class MazeGame extends JFrame {
     //리플레이를 위한 버퍼 and 파일을 저장할 경로
     private final StringBuffer buffer = new StringBuffer();
     private final String path = "D:\\secu_extend\\secu_exten\\src\\secu\\all_log\\game_save";
-    private int file_count = 2;
+    private int file_count = 0;
     private final String txt = ".txt";
     private  Path filePath = Paths.get(path + txt);
 
@@ -472,36 +472,31 @@ public class MazeGame extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            int panelWidth = getWidth();// 패널 전체 가로 픽셀
-            int panelHeight = getHeight();// 패널 전체 세로 픽셀
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
 
-            // 미로 영역만 사용할 높이 (UI 영역 제외)
-            int uiWidth = 220;              // 오른쪽 UI 고정 폭
-            int mazeWidth = panelWidth - uiWidth; // 미로가 실제로 사용 가능한 가로 영역
+            // 미로 크기를 창 크기에 맞춤 (정사각형 셀 유지)
+            int cellSize = Math.min(panelWidth / (maze[0].length + 3), panelHeight / (maze.length + 2));
 
-            //셀크기계산
-            int cellWidth = mazeWidth / maze[0].length; // 가로 기준 셀 크기
-            int cellHeight = panelHeight / maze.length; // 세로 기준 셀 크기
-
-            // 정사각형 유지
-            int cellSize = Math.min(cellWidth, cellHeight);
-
-            
-            //실제 미로 픽셀 크기
-            int mazePixelWidth  = cellSize * maze[0].length;
+            // 미로 실제 픽셀 크기
+            int mazePixelWidth = cellSize * maze[0].length;
             int mazePixelHeight = cellSize * maze.length;
 
-            //중앙정렬
-            int offsetX = (mazeWidth - mazePixelWidth) / 2;
-            int offsetY = (panelHeight - mazePixelHeight) / 2;
+            // 미로를 중앙에 배치
+            int mazeStartX = (panelWidth - mazePixelWidth) / 2;
+            int mazeStartY = (panelHeight - mazePixelHeight) / 2 - 20; // 상태UI 공간만큼 위로
 
-            //UI 시작 X 좌표
-            int uiX = mazeWidth + 10;
+            // UI 영역을 미로 아래에 배치 (겹침 방지)
+            int uiHeight = 180;
+            int uiWidth = 200;
+            int uiX = (panelWidth - uiWidth) / 2;
+            int uiY = mazeStartY + mazePixelHeight + 10;
 
+            // 미로 그리기
             for (int i = 0; i < maze.length; i++) {
                 for (int j = 0; j < maze[i].length; j++) {
-                    int x = offsetX + j * cellSize;
-                    int y = offsetY + i * cellSize;
+                    int x = mazeStartX + j * cellSize;
+                    int y = mazeStartY + i * cellSize;
 
                     boolean isVisible = isInFogRange(i, j, player1)
                             || isInFogRange(i, j, player2);
@@ -510,20 +505,20 @@ public class MazeGame extends JFrame {
                         g.setColor(new Color(100, 100, 100));
                         g.fillRect(x, y, cellSize, cellSize);
                         g.setColor(Color.GRAY);
-                        g.drawRect(x, y,cellSize, cellSize);
+                        g.drawRect(x, y, cellSize, cellSize);
                         g.setColor(Color.WHITE);
-                        g.setFont(new Font("맑은 고딕", Font.BOLD, 20));
-                        g.drawString("?", x + 18, y + 32);
+                        g.setFont(new Font("Arial", Font.BOLD, cellSize / 3));
+                        g.drawString("?", x + cellSize/3, y + cellSize/2 + 5);
                     } else {
                         switch (maze[i][j]) {
-                            case 0: g.setColor(Color.GREEN); break;//시작지점
-                            case 1: g.setColor(Color.BLUE);break;// 플레이어1
-                            case 2: g.setColor(Color.ORANGE); break;// 플레이어2 (AI)
-                            case 3: g.setColor(Color.WHITE); break; //길
-                            case 4: g.setColor(Color.BLACK); break;//벽
-                            case 5: g.setColor(Color.GREEN); break; //덫
-                            case 6: g.setColor(Color.YELLOW); break;//아이템
-                            case 9: g.setColor(Color.RED); break;//도착
+                            case 0: g.setColor(Color.GREEN); break;
+                            case 1: g.setColor(Color.BLUE); break;
+                            case 2: g.setColor(Color.ORANGE); break;
+                            case 3: g.setColor(Color.WHITE); break;
+                            case 4: g.setColor(Color.BLACK); break;
+                            case 5: g.setColor(Color.GREEN); break;
+                            case 6: g.setColor(Color.YELLOW); break;
+                            case 9: g.setColor(Color.RED); break;
                             default: g.setColor(Color.GRAY);
                         }
 
@@ -532,46 +527,33 @@ public class MazeGame extends JFrame {
                         g.drawRect(x, y, cellSize, cellSize);
                     }
                 }
-
             }
-//            반투명 배경
-            g.setColor(new Color(0, 0, 0, 150));
-            g.fillRect(510, 10, 200, 200);
-
-            //테두리
+            // 상태 UI 배경 (미로 아래 중앙)
+            g.setColor(new Color(0, 0, 0, 180));
+            g.fillRect(uiX, uiY, uiWidth, uiHeight);
             g.setColor(Color.WHITE);
-            g.drawRect(uiX, 10, 200, 200);
+            g.drawRect(uiX, uiY, uiWidth, uiHeight);
 
-            // 시간 텍스트
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-            g.drawString("게임 시간: " + gameSeconds + "초", 510, 25);
+            // 상태 텍스트
+            g.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+            int textX = uiX + 15;
+            int textY = uiY + 25;
+            int lineHeight = 20;
 
-            // 플레이어 상태
-            g.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            String status = "플레이어1: " + (player1.isArrived() ? "도착!" : "진행중");
-            g.drawString(status, 510, 45);
+            g.drawString("플레이어: " + gameSeconds + "초", textX, textY);
+            g.drawString("AI: " + aiGameSeconds + "초", textX, textY + lineHeight);
+            g.drawString("P1: " + (player1.isArrived() ? "도착!" : "진행중"), textX, textY + lineHeight * 2);
+            g.drawString("AI: " + (player2.isArrived() ? "도착!" : "진행중"), textX, textY + lineHeight * 3);
 
             if (player1.isItemActive()) {
                 g.setColor(Color.YELLOW);
-                g.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-                g.drawString("P1 아이템: " + player1.getItemTimeLeft() + "초", 510, 75);
+                g.drawString("아이템: " + player1.getItemTimeLeft() + "초", textX, textY + lineHeight * 4);
+                g.setColor(Color.WHITE);
             }
-            if(player1.isHastrap()){
-                g.setColor(Color.YELLOW);
-                g.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-                g.drawString("P1 트랩헤제까지: " + player1.getTrapcountdown() + "초", 510, 85);
+            if (player1.isHastrap()) {
+                g.setColor(Color.RED);
+                g.drawString("트랩: " + player1.getTrapcountdown() + "초", textX, textY + lineHeight * 5);
             }
-            // 시간 텍스트
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-            g.drawString("게임 시간: " + aiGameSeconds + "초", 510, 105);
-
-            // 플레이어 상태
-            g.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-            String status2 = "플레이어1: " + (player2.isArrived() ? "도착!" : "진행중");
-            g.drawString(status2, 510, 10);
-
         }
 
     }
